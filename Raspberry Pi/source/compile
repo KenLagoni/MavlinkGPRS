@@ -1,0 +1,3 @@
+g++ -o MavlinkGPRSServer main.cpp connection.cpp parameters.cpp device.cpp deviceClient.cpp waypoints.cpp deviceServer.cpp mavPackageFilter.cpp
+cp MavlinkGPRSServer ../MavlinkGPRSServer
+

@@ -1,0 +1,60 @@
+AT
+41 54 D A 4F 4B D A 			"AT<CR><LF>OK<CR><LF>"
+at+cgatt?
+61 74 2B 63 67 61 74 74 3F D A 2B 43 47 41 54 54 3A 20 30 D A D A 4F 4B D A      "at+cgatt?<CR><LF>+CGATT: 0<CR><LF><CR><LF>OK<CR><LF>"
+at+cipmux=1
+61 74 2B 63 69 70 6D 75 78 3D 31 D A 4F 4B D A 									 "at+cimux=1<CR><LR>OK<CR><LF>"
+at+cstt="internet"																 
+61 74 2B 63 73 74 74 3D 22 69 6E 74 65 72 6E 65 74 22 D A 4F 4B D A              "at+cstt="internet"<CR><LF>OK<CR><LR> 
+at+ciicr
+61 74 2B 63 69 69 63 72 D A 4F 4B D A 											 "at+ciicr<CR><lF>OK<CR><LF>"
+at+cifsr
+61 74 2B 63 69 66 73 72 D A 32 2E 31 32 39 2E 32 34 34 2E 39 34 D A				 "at+cifsr<CR><LF>2.129.244.94<CR><LF>"
+
+AT
+ (0)41 (0)54 (0)D (1)A (2)4F (3)4B (4)D (5)A SIM800L AT OK!
+
+at+cgatt?
+ (0)61 (0)74 (0)2B (0)63 (0)67 (0)61 (0)74 (0)74 (0)3F (0)D (1)A (2)2B (0)43 (0)47 (0)41 (0)54 (0)54 (0)3A (0)20 (0)30 (0)D (1)A (2)D (1)A (2)4F (3)4B (4)D (5)A SIM800L AT OK!
+
+at+cipmux=1
+ (0)61 (0)74 (0)2B (0)63 (0)69 (0)70 (0)6D (0)75 (0)78 (0)3D (0)31 (0)D (1)A (2)4F (3)4B (4)D (5)A SIM800L AT OK!
+
+at+cstt="internet"
+ (0)61 (0)74 (0)2B (0)63 (0)73 (0)74 (0)74 (0)3D (0)22 (0)69 (0)6E (0)74 (0)65 (0)72 (0)6E (0)65 (0)74 (0)22 (0)D (1)A (2)4F (3)4B (4)D (5)A SIM800L AT OK!
+
+at+ciicr
+41 54 2B 43 49 52 46 53 52 0D 0A 45 52 52 4F 52 0D 0A
+
+ (0)61 (0)74 (0)2B (0)63 (0)69 (0)69 (0)63 (0)72 (0)D (1)A (2)2B (0)50 (0)44 (0)50 (0)3A (0)20 (0)44 (0)45 (0)41 (0)43 (0)54 (0)D (1)A (2)D (1)A (2)45 (0)52 (0)52 (0)4F (0)52 (0)D (1)A SIM800L AT TIMEOUT!   "at+ciicr<CR<LF>+PDP: DEACT<CR><LF>ERROR<CR><LF>"
+    a     t     +     c    
+at+cifsr
+ (0)61 (0)74 (0)2B (0)63 (0)69 (0)66 (0)73 (0)72 (0)D (1)A (2)45 (0)52 (0)52 (0)4F (0)52 (0)D (1)A SIM800L AT TIMEOUT!
+
+at+cipstart=0,"UDP","81.161.156.81","747"
+ (0)61 (0)74 (0)2B (0)63 (0)69 (0)70 (0)73 (0)74 (0)61 (0)72 (0)74 (0)3D (0)30 (0)2C (0)22 (0)55 (0)44 (0)50 (0)22 (0)2C (0)22 (0)38 (0)31 (0)2E (0)31 (0)36 (0)31 (0)2E (0)31 (0)35 (0)36 (0)2E (0)38 (0)31 (0)22 (0)2C (0)22 (0)37 (0)34 (0)37 (0)22 (0)D (1)A (2)45 (0)52 (0)52 (0)4F (0)52 (0)D (1)A SIM800L AT TIMEOUT!
+
+
+CRC Error!
+09 24 01 01 00 0B 00 00 00 01 03 59 05 03 C5 CE 
+CSQBAQALAAAAAQNZBQPFzg==
+Message ready for relay to UDP
+
+ Reply: 41 54 0D 0A 4F 4B 0D 0A  Prefix:AT: Response1:OK: Response2::
+ Reply: 41 54 2B 43 47 41 54 54 3F 0D 0A 2B 43 47 41 54 54 3A 20 30 0D 0A 0D 0A 4F 4B 0D 0A  Prefix:AT+CGATT?: Response1:+CGATT: 0: Response2:OK:
+ Reply: 41 54 2B 43 53 51 0D 0A 2B 43 53 51 3A 20 30 2C 30 0D 0A 0D 0A 4F 4B 0D 0A  Prefix:AT+CSQ: Response1:+CSQ: 0,0: Response2:OK:
+ Reply: 41 54 2B 43 49 50 4D 55 58 3D 31 0D 0A 4F 4B 0D 0A  Prefix:AT+CIPMUX=1: Response1:OK: Response2::
+ Reply: 41 54 2B 43 53 54 54 3D 22 69 6E 74 65 72 6E 65 74 22 0D 0A 4F 4B 0D 0A  Prefix:AT+CSTT="internet": Response1:OK: Response2::
+ Reply: 41 54 2B 43 49 49 43 52 0D 0A 2B 50 44 50 3A 20 44 45 41 43 54 0D 0A 0D 0A 45 52 52 4F 52 0D 0A  Prefix:AT+CIICR: Response1:+PDP: DEACT: Response2:ERROR:
+ Reply: 41 54 2B 43 49 46 53 52 0D 0A 45 52 52 4F 52 0D 0A  Prefix:AT+CIFSR: Response1:ERROR: Response2::
+SIM800L Init response:Error!
+
+
+Reply: 41 54 0D 0A 4F 4B 0D 0A  Prefix:AT: Response1:OK: Response2::
+ Reply: 41 54 2B 43 47 41 54 54 3F 0D 0A 2B 43 47 41 54 54 3A 20 30 0D 0A 0D 0A 4F 4B 0D 0A  Prefix:AT+CGATT?: Response1:+CGATT: 0: Response2:OK:
+ Reply: 41 54 2B 43 53 51 0D 0A 2B 43 53 51 3A 20 32 39 2C 30 0D 0A 0D 0A 4F 4B 0D 0A  Prefix:AT+CSQ: Response1:+CSQ: 29,0: Response2:OK:
+ Reply: 41 54 2B 43 49 50 4D 55 58 3D 31 0D 0A 4F 4B 0D 0A  Prefix:AT+CIPMUX=1: Response1:OK: Response2::
+ Reply: 41 54 2B 43 53 54 54 3D 22 69 6E 74 65 72 6E 65 74 22 0D 0A 4F 4B 0D 0A  Prefix:AT+CSTT="internet": Response1:OK: Response2::
+ Reply: 41 54 2B 43 49 49 43 52 0D 0A 4F 4B 0D 0A  Prefix:AT+CIICR: Response1:OK: Response2::
+ Reply: 41 54 2B 43 49 46 53 52 0D 0A 31 33 30 2E 32 32 37 2E 31 33 32 2E 32 37 0D 0A  Prefix:AT+CIFSR: Response1:130.227.132.27: Response2::
+ Reply: 41 54 2B 43 49 50 53 54 41 52 54 3D 30 2C 22 55 44 50 22 2C 22 38 31 2E 31 36 31 2E 31 35 36 2E 38 31 22 2C 22 37 34 37 22 0D 0A 4F 4B 0D 0A  Prefix:AT+CIPSTART=0,"UDP","81.161.156.81","747": Response1:OK: Response2::

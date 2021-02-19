@@ -55,16 +55,16 @@ The Arduino MKRZero has the task of recieving Mavlink packages from the Ardupilo
 
 
 # Features (Ground side):
-On the ground everything is handled by the raspberry pi which is connected to the internet via my home router. The Pi has two servers running:
+On the ground everything is handled by the MavlinkServer program, which can be build for both linux or Raspberry Pi. The server is connected to the internet via my home router. The Pi has two servers running:
 1. GPRS server for UDP data to and from the Drone.
-This will listen for UDP data sent from the Arduino on the drone. It will also download and save all drone parameters and mission waypoints if selected. This will only be done once, and thus clients (Qgroundcontrol/mission planner) connecting to the server will get data the cashed data on the server, ensuring not to load the drone.
-All data recieved from the drone is relayed to all clients connected.
+This will listen for Mavlink UDP data sent from the drone via onboard Arduino. It will also download and save all drone parameters and mission waypoints each time the it detectes a boot on the drone. This will only be done once per drone reboot, and thus clients (Qgroundcontrol/mission planner) connecting to the server will get data download ensuring not to load the drone.
+All data recieved from the drone is relayed to all clients connected, but no clients have write access to drone.
+The downloaded data from drone will be saved in [DATE_TIME]-Parameters.txt and [DATE_TIME]-Waypoints.txt - The client must then do a reconnect to get the updated values (disconnect/connect). This ensures the server can run 24/7 allways ready.
 
 2. Client server for handling multiple clients (Qgroundcontrol / Mission Planner).
 The Client server listens for Qgroundcontrol / Mission PLanner TCP connection on port 5760 (and when connection will negotiate another port for data). I found UDP packages from my router to a client on 4G is not working and thus only TCP should be used.
 When clients connect, they think they are connected to a drone (Ardupilot) and thus will ask for parameters and mission waypoints which the server will provide given the GPRS server has made them available. 
 
-Now the program will allways ask drone for parameters/mission when it detects a reboot. The newly downloaded data will be saved in [DATE_TIME]-Parameters.txt and [DATE_TIME]-Waypoints.txt - The client must then do a reconnect to get the updated values (disconnect/connect).
 
 
 # How to Build
@@ -76,8 +76,12 @@ This could be:
 `SIM800L ModemGPRS(&Serial3, 115200, PIN_SIM800L_RESET, "", "internet", "10.11.12.13", 14450, "UDP", 100, 2000);`
 Ensure the SAMD liberies are installed and the sketch sould now build and upload to the ArduinoMKRZero.
 
-## Raspberry Pi server
-Download the "MavlinkGPRSServer" to the Raspberry Pi with a standard Buster image installed. Start the server by running the command:
+## Mavlink Server
+Download the source to the Raspberry Pi (standard Buster image) or Linux (Ubuntu 20.03) using git clone:
+`git clone https://github.com/KenLagoni/MavlinkGPRS.git`
+Build the program by running the build script:
+`cd MavlinkGPRS && ./build.sh`
+Starting the Mavlink GPRS server:
 `./MavlinkGPRSServer [GPRS INPUT UDP PORT] [TCP CLIENTHS PORT] [UDP CLIENT PORT]`
 
 Old command which saved or loaded waypoints/parameters, this is now outdated:

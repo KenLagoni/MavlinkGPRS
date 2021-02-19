@@ -64,6 +64,9 @@ All data recieved from the drone is relayed to all clients connected.
 The Client server listens for Qgroundcontrol / Mission PLanner TCP connection on port 5760 (and when connection will negotiate another port for data). I found UDP packages from my router to a client on 4G is not working and thus only TCP should be used.
 When clients connect, they think they are connected to a drone (Ardupilot) and thus will ask for parameters and mission waypoints which the server will provide given the GPRS server has made them available. 
 
+Now the program will allways ask drone for parameters/mission when it detects a reboot. The newly downloaded data will be saved in [DATE_TIME]-Parameters.txt and [DATE_TIME]-Waypoints.txt - The client must then do a reconnect to get the updated values (disconnect/connect).
+
+
 # How to Build
 
 ## Arduino MKRZero
@@ -74,17 +77,20 @@ This could be:
 Ensure the SAMD liberies are installed and the sketch sould now build and upload to the ArduinoMKRZero.
 
 ## Raspberry Pi server
-Download the "MavlinkGPRSServer" to the Raspberry Pi 3 with a standard Rasbarian image installed. Start the server by running the command:
-`./mavlinkGPRSServer [GPRS INPUT UDP PORT] [TCP LISTEN PORT] [UDP CLIENT PORT] [WAYPOINT FILE] -[R/W] [PARAMETER FILE] -[R/W]`
+Download the "MavlinkGPRSServer" to the Raspberry Pi with a standard Buster image installed. Start the server by running the command:
+`./MavlinkGPRSServer [GPRS INPUT UDP PORT] [TCP CLIENTHS PORT] [UDP CLIENT PORT]`
 
-Start the server and download waypoints to waypoint.txt and Ardupilot parameters to parameters.txt:
-`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -W parameters.txt -W`
+Old command which saved or loaded waypoints/parameters, this is now outdated:
+~~`./mavlinkGPRSServer [GPRS INPUT UDP PORT] [TCP LISTEN PORT] [UDP CLIENT PORT] [WAYPOINT FILE] -[R/W] [PARAMETER FILE] -[R/W]`~~
 
-Start the server but don't download waypoints or parameters, but instead use the waypoint.txt and parameters.txt files:
-`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -R parameters.txt -R`
+~~Start the server and download waypoints to waypoint.txt and Ardupilot parameters to parameters.txt:~~
+~~`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -W parameters.txt -W`~~
 
-Start the server but only download waypoints:
-`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -W parameters.txt -R`
+~~Start the server but don't download waypoints or parameters, but instead use the waypoint.txt and parameters.txt files:~~
+~~`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -R parameters.txt -R`~~
+
+~~Start the server but only download waypoints:~~
+~~`./mavlinkGPRSServer 14450 5760 6000 waypoint.txt -W parameters.txt -R`~~
 
 
 

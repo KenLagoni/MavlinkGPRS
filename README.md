@@ -89,7 +89,7 @@ Build the program by running the build script:
 
 Starting the Mavlink GPRS server using default values:  
  `./MavlinkGPRSServer`  
- This will listen for UDP data from drone on port 14550 and accept MP or QGC on TCP port 5760 and it will not download parameters from the drone, but in stead load the default parameters 1086 from Arduplane v4.0.9.
+ This will listen for UDP data from drone on port 14450 and accept MP or QGC on TCP port 5760 and it will not download parameters from the drone, but in stead load the default parameters 1086 from Arduplane v4.0.9.
   
   
 Starting the Mavlink GPRS with custom ports:  

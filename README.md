@@ -75,6 +75,9 @@ This could be:
 `SIM800L ModemGPRS(&Serial3, 115200, PIN_SIM800L_RESET, "", "internet", "10.11.12.13", 14450, "UDP", 100, 2000);`  
 >**NOTE:** Ensure the SAMD liberies are installed and the sketch sould now build and upload to the ArduinoMKRZero.
 
+>**NOTE:** The defualt baudrate on SIM800L is 9600, this must be changed to 115200!.
+> This can be done with "AT+IPR=115200" and then "AT&W" if settings is lost after reboot.
+
 ## Mavlink Server
 Download the source to the Raspberry Pi (standard Buster image) or Linux (Ubuntu 20.03) using git clone:  
 `git clone https://github.com/KenLagoni/MavlinkGPRS.git`  

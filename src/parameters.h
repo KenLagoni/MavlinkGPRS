@@ -31,12 +31,13 @@ class Parameters
 	Parameters(); 
 	Parameters(std::string filePath, std::string fileName, DataMode_t mode); 
 
-    void addParameter(mavlink_message_t msg);
+   	void addParameter(mavlink_message_t msg);
 	void addParameter(mavlink_param_value_t msg);
 	
 	mavlink_param_value_t getParameterByID(uint16_t id);
 	uint16_t getNumberOfParameters(void);
 	int16_t getFirstMissingParameter(void);
+	int16_t getMissingParameters(void);
 	DataMode_t getParameterMode(void);
 	
 	mavlink_autopilot_version_t autoPilotVersion;

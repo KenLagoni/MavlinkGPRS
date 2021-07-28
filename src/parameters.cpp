@@ -39,12 +39,14 @@ using namespace std;
 	{
 		this->_filePath = filePath + "/";
 	}
-		
-	this->_fileName = fileName;
 	*/
+	if(fileName != ""){	
+		this->_fileName = fileName;
+	}
+	
 	this->fileMode = mode;
 	if(this->fileMode == READ_ONLY){ // else skip load and thus main will ask for them.
-		printf("Loading all parameters from file %s", this->_fileName.c_str());
+		printf("Loading all parameters from file %s\n", this->_fileName.c_str());
 		this->loadParameters();
 	}
 } 
@@ -66,7 +68,7 @@ using namespace std;
 	time_t now = time(0);
 	// convert now to tm struct for UTC
 	tm *gmtm = gmtime(&now);
-	sprintf(buf,"%02d-%02d-%04d_%02d-%02d-%02d_Parameters.txt",gmtm->tm_mday,gmtm->tm_mday,gmtm->tm_year+1900,gmtm->tm_hour,gmtm->tm_min,gmtm->tm_sec);
+	sprintf(buf,"%02d-%02d-%04d_%02d-%02d-%02d_Parameters.txt",gmtm->tm_mday,gmtm->tm_mon,gmtm->tm_year+1900,gmtm->tm_hour,gmtm->tm_min,gmtm->tm_sec);
 	this->_fileName = buf;
  }
  
@@ -138,6 +140,27 @@ using namespace std;
 	return this->fileMode;
  }
 
+
+ int16_t Parameters::getMissingParameters(void){
+//	printf("Missing parameters...");
+	if(totalParameterCount == 0){
+		return 0;
+	}
+
+	int16_t numberOfParametersSet = 0;
+	
+	for(int16_t index=0;index<totalParameterCount; index++){
+		if(parameters[index].param_count != 0){ // anything else than 0 means set
+			numberOfParametersSet++; 
+		}else{ // 0 means not set
+//			printf(" #%d", index);		
+		}
+	 }
+//	 printf("\n");
+//	 printf("Total parameters set:%d\n", numberOfParametersSet);
+ 	return totalParameterCount-numberOfParametersSet;
+ }
+
  /*
  mavlink_message_t Parameters::getMavlinkParameterByID(uint16_t id){
 	 mavlink_message_t msg;
@@ -205,11 +228,11 @@ void Parameters::loadParameters(void){
 				default: 	
 				break;
 			}	
-			printf(":%s:\n", line.c_str());	
+		//	printf(":%s:\n", line.c_str());	
 		}
 		myfile.close();
 		this->totalParameterCount = parameterCount;
-		printf("Loading complete (%d) complete!\n", this->totalParameterCount);		
+		printf("Loading %d parameters completed!\n", this->totalParameterCount);		
 	}else{
 		
 		printf("Open parameter file failed!\n");		

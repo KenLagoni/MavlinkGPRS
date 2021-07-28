@@ -150,6 +150,16 @@ std::string Device::getName(void){
 		bzero(this->txBuffer, MAXLINE); 
 		totalLength = mavlink_msg_to_send_buffer(this->txBuffer, &data);		
 		uint16_t res = this->myConnection.writeData(this->txBuffer, totalLength);
+		
+		/*
+		// DEBUG printf:
+		printf("Sending MSG: ");
+		for (int a=0;a<totalLength; a++){
+			printf("%02x ", this->txBuffer[a]);
+		}
+		printf("\n");
+		*/
+		
 //		printf("Sending MSG ID=%d\n",data.msgid);
 	}else{
 		printf("Client not active\n");

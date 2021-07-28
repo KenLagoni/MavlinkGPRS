@@ -110,7 +110,7 @@
 			if(this->droneParameters->getParameterMode() == UPDATE){
 				printf("Downloading all parameters from Drone...\n");
 				this->getParameterList(); // Send Parameter List request.
-				this->nextPackageTimeout=this->lastmsgTime+5000;				
+				this->nextPackageTimeout=this->lastmsgTime+30000;				
 				this->state=GET_PARAMETERS;
 			}else if(this->droneWaypoints->getWaypointMode() == UPDATE){
 				printf("Requisting mission from drone...\n");
@@ -160,7 +160,7 @@
 			
 			
 			this->droneParameters->addParameter(parameter);
-			int16_t missingParameter = this->droneParameters->getFirstMissingParameter();
+			int16_t missingParameter = this->droneParameters->getMissingParameters();
 			if(missingParameter == -1){
 				if(this->droneWaypoints->getWaypointMode() == UPDATE){
 					printf("Requisting mission from drone...\n");
@@ -171,23 +171,33 @@
 					this->state=RUNNING;									
 				}
 			}
+			/*
+			else{ // we are still missing parameters
+				int16_t firstMissingParameter = this->droneParameters->getFirstMissingParameter();
+				if (firstMissingParameter > 0){
+					this->getParameterByID((uint16_t)missingParameter);
+					printf("Still missing parameters, Re-requisting Parameter number=%d\n", (uint16_t)missingParameter);						
+				}	
+			}*/
 		}else{
 			if(this->lastmsgTime>this->nextPackageTimeout){
-				this->nextPackageTimeout=this->lastmsgTime+1000;
-				int16_t missingParameter = this->droneParameters->getFirstMissingParameter();
-				if(missingParameter == -1){ // we must be done then.				
+				this->nextPackageTimeout=this->lastmsgTime+100;
+				
+				int16_t firstMissingParameter = this->droneParameters->getFirstMissingParameter();
+				if(firstMissingParameter == -1){ // we must be done then.				
 					printf("Done Downloading all parameters!\n");	
 					//if(this->droneParameters->getParameterMode() == UPDATE)					
 					this->state=GET_MISSIOM;
 				//	this->state=RUNNING;
 				}else{ 
-					if(missingParameter < 100){ // ask for full list again.
-						this->nextPackageTimeout=this->lastmsgTime+5000;	
-						printf("Only %d parameters downloaded, Re-requisting FULL Parameter list\n",missingParameter);						
+					int16_t missingParameters = this->droneParameters->getMissingParameters();
+					if(missingParameters > 200){ // ask for full list again.
+						this->nextPackageTimeout=this->lastmsgTime+30000;	
+						printf("Missing %d parameters, Re-requisting FULL Parameter list\n",missingParameters);						
 						this->getParameterList(); // Send Parameter List request.
 					}else{
-						this->getParameterByID((uint16_t)missingParameter);
-						printf("Re-requisting Parameter number=%d\n", (uint16_t)missingParameter);						
+						this->getParameterByID((uint16_t)firstMissingParameter);
+						printf("Missing %d parameters, Re-requisting Parameter number=%d\n",missingParameters, (uint16_t)firstMissingParameter);						
 					}
 				}
 			}

@@ -9,6 +9,8 @@
 #include <sys/socket.h> 
 #include <sys/types.h> 
 #include <unistd.h> 
+#include <fcntl.h>
+#include <getopt.h>
 
 #include <sys/time.h>
 
@@ -31,67 +33,161 @@ int max(int x, int y)
         return y; 
 } 
 
-int main(int argc, char** argv) 
 
-	// Input arguments ./main [GPRS INPUT UDP PORT] [TCP LISTEN PORT] [UDP CLIENT PORT] [WAYPOINT FILE] [R/W] [PARAMETER FILE] [R/W]
-	// ./main 14450 5760 6500 waypoints.txt -R parameters.txt -R
-	// argv[0] 	./main - not used
-	// argv[1] 	[GPRS INPUT UDP PORT] must be same as SIM800L transmitting port (14450)
-	// argv[2] 	[TCP LISTEN PORT] default MP and QGC (5760)
-	// argv[3] 	[UDP CLIENT PORT] pick a port (6500)
-	//
-	// Parameter 4-7 not used any more, know parameters and mission will always be downloaded and saved.
-	// argv[4] 	[WAYPOINT FILE] "waypoint.txt" load or save waypoint here.
-	// argv[5] 	-R means load waypoint from file and don't ask drone. -W means get waypoints from drone and write to file.
-	// argv[6] 	[PARAMETER FILE] "parameter.txt" load or save parameters here.
-	// argv[7] 	-R means load parameters from file and don't ask drone. -W means get parameters from drone and write to file.
+void usage(void) {
+    printf("\nUsage: MavlinkGPRS [options]\n"
+           "\n"
+           "Options:\n"
+           "-i  <Input Port>       Port which to listen for UDP data from drone/SIM800L (Default: 14450)\n"
+           "-c  <TCP Client Port>  TCP LISTEN PORT default MP and QGC (5760).\n"
+           "-u  <UDP Client Port>  UDP Port for relaying incomming sata to (default 6500).\n"
+           "-w  <Parameter file>   If specified the program will download and save all parameters from drone (slow).\n"
+           "-r  <Parameter file>   If specified the program will read all parameters from this input file and not download from drone (fast).\n"
+           "\n"
+           "Example:\n"
+           " MavlinkGPRS\n"
+	   " MavlinkGPRS -i 14550 -c 6000 -u 1234 -w\n"
+	   " MavlinkGPRS -i 14550 -c 6000 -u 1234 -w parameters.txt\n"
+	   " MavlinkGPRS -i 14550 -c 6000 -u 1234 -r savedparameters.txt\n"
+           "\n");
+    exit(1);
+}
+
+
+int flagHelp = 0;
+
+int main(int argc, char** argv) 
 {
+/*
+	int gprsPort = strtol(argv[1], &p, 10);
+	int tcpPort = strtol(argv[2], &p, 10);
+	int udpClientPort= strtol(argv[3], &p, 10);
+	std::string parameterFile = "";
+	std::string parameterFileMode("-r");
+*/
+	int gprsPort = 14450;     // default value if not specified.
+	int tcpPort = 5760;       // default value if not specified.
+	int udpClientPort = 6500; // default value if not specified.
+	std::string parameterFile = "";
+	DataMode_t parameterMode = READ_ONLY;
+	
+	printf("Starting MavlinkGRPS Server(c)2021 by Lagoni.\n");
+
+    while (1) {
+        int nOptionIndex;
+        static const struct option optiona[] = {
+            { "help", no_argument, &flagHelp, 1 },
+            {      0,           0,         0, 0 }
+        };
+        int c = getopt_long(argc, argv, "h:i:c:u:w:r:", optiona, &nOptionIndex);
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 0: {
+                // long option
+                break;
+            }
+            case 'h': {
+//				fprintf(stderr, "h\n");
+                usage();
+                break;
+            }
+            case 'i': {
+		        	gprsPort=atoi(optarg);
+//				fprintf(stderr, "GPRS Port:            :%d\n",gprsPort);
+                break;
+            }
+			
+            case 'c': {
+		        	tcpPort=atoi(optarg);
+//				fprintf(stderr, "TCP Port:            :%d\n",tcpPort);
+	            break;
+            }
+
+            case 'u': {
+		        	udpClientPort=atoi(optarg);
+//				fprintf(stderr, "UDP Port:            :%d\n",udpClientPort);
+	            break;
+            }
+
+
+            case 'w': {
+	            		parameterFile = optarg;
+	            		parameterMode = UPDATE;
+				fprintf(stderr, "Parameters file be downloaded from drone and saved to file: %s\n",parameterFile.c_str());
+	            break;
+            }
+
+            case 'r': {
+	            		parameterFile = optarg;
+	            		parameterMode = READ_ONLY;
+	            		if(parameterFile == ""){
+		            		parameterFile = "defaultParameters.txt";
+	            		}
+				fprintf(stderr, "Parameter File will not be downloaded but loaded from file %s\n",parameterFile.c_str());
+	            break;
+            }		
+
+            default: {
+                fprintf(stderr, "MavlinkGPRS: Unknown input switch %c\n", c);
+                usage();
+
+                break;
+            }
+        }
+    }
+
+    if (optind > argc) {
+        usage();
+    }
+
     int nready, maxfdp1; 
     char buffer[MAXLINE]; 
     fd_set rset; 
     ssize_t n; 
 
-	char *p;
-	int gprsPort = strtol(argv[1], &p, 10);
-	int tcpPort = strtol(argv[2], &p, 10);
-	int udpClientPort= strtol(argv[3], &p, 10);	
-//	std::string waypointFile(argv[4]);
-//	std::string waypointFileMode(argv[5]);
-//	std::string parameterFile = argv[6];
-//	std::string parameterFileMode(argv[7]);
-
-	printf("Starting Lagoni's Drone via. GPRS server\n");
-
-	int i;
-    for(i=0;i<argc-1;i++)
-    {
-        printf("Input Argument %d:%s:\n",argc,argv[i]);
-    }
-/*	
-	struct timeval  timeout;
-	timeout.tv_sec = 5; 
-    timeout.tv_usec = 0; 
-*/	
+	printf("Using GPRS Port:%d\n", gprsPort);
+	printf("TCP Clients can connect on Port:%d\n", tcpPort);
+	printf("UDP data is forwarded to Port:%d\n", udpClientPort);
+	printf("-------------------------------------------------------\n \n \n");
+	
 	// classe for connection to TCP listen socket:
 	Connection tcpListen(tcpPort, SOCK_STREAM);		
 	
 	// Initilize Paraemter list
-	/*
-	DataMode_t parameterMode = READ_ONLY;
-	if((parameterFileMode.compare("-W") == 0) || (parameterFileMode.compare("-w") == 0)){
-		printf("Parameter file will be download from drone and saved to %s\n", argv[6]);	
-		parameterMode = UPDATE;
-	}else if((parameterFileMode.compare("-R") == 0) || (parameterFileMode.compare("-r") == 0)){
-		printf("Parameter file be read from file %s and not download.\n", argv[6]);	
-		parameterMode = READ_ONLY;
+/*
+	if(argc > 4){
+		if((parameterFileMode.compare("-W") == 0) || (parameterFileMode.compare("-w") == 0)){
+			printf("Parameter file will be download from drone and saved to %s\n", argv[4]);	
+			parameterMode = UPDATE;	
+	//		Parameters parametersList("", "", UPDATE);
+		}else if((parameterFileMode.compare("-R") == 0) || (parameterFileMode.compare("-r") == 0)){
+			printf("Parameter file be read from file %s and not download.\n", argv[4]);	
+			parameterMode = READ_ONLY;
+	//		Parameters parametersList("", argv[4], READ_ONLY);	
+		}else{
+	//		printf("Parameter file mode is not correct, use -R or -W\n");
+			printf("Incorrect Parameter mode specified, using dummyParameters.txt\n");
+			parameterMode = READ_ONLY;
+			parameterFile = "dummyParameters.txt";
+		}
 	}else{
-		printf("Parameter file mode is not correct, use -R or -W\n");
-		return 0;	
+		printf("No Parameter specified, using dummyParameters.txt\n");
+		parameterMode = READ_ONLY;
+		parameterFile = "dummyParameters.txt";
 	}
 	
-	Parameters parametersList("", argv[6], parameterMode);	
-	*/
-	Parameters parametersList("", "", UPDATE);	 // Always update.
+*/	
+	if(parameterMode == READ_ONLY && parameterFile == ""){
+		parameterFile = "defaultParameters.txt";
+	}
+	Parameters parametersList("", parameterFile, parameterMode);
+		
+	
+	
+	
 
 	// Initilize waypoint list
 	/*
@@ -138,6 +234,8 @@ int main(int argc, char** argv)
 	heartmsg.base_mode = 89;
 	heartmsg.system_status = 5; // not active
 	heartmsg.mavlink_version = 3;					
+
+	printf("Waiting for data from drone....\n");	
 
     for (;;) { 
  	  

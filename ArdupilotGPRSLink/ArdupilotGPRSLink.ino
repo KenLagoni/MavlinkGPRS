@@ -148,7 +148,7 @@ void loop() {
   
     if(ModemGPRS.service()){ // service SIM800L module.
       uint8_t rbyte = ModemGPRS.read();
-      if (mavlink_parse_char(MAVLINK_COMM_0, rbyte, &msgSim, &statusSim))
+      if (mavlink_parse_char(MAVLINK_COMM_1, rbyte, &msgSim, &statusSim))
       {
         switch(dataFromSIM800LFilter.getPackageFilter(msgSim.msgid))
         {

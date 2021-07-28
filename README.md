@@ -94,15 +94,15 @@ Starting the Mavlink GPRS with custom ports:
 This will listen for UDP data from drone on port 25000 and accept MP or QGC on TCP port 58000. It will use default parameters.
   
   
-Starting the Mavlink GPRS and download parameters from drone:
+Starting the Mavlink GPRS and download parameters from drone:  
  `./MavlinkGPRSServer -w parameters.txt`  
 It will download all parameters and save them to parameters.txt. (this can take a while 2-10min).  
 
-Starting the Mavlink GPRS and load parameters from download file:
+Starting the Mavlink GPRS and load parameters from download file:  
  `./MavlinkGPRSServer -r parameters.txt`  
 This will load all Parameters from input file.  
 
-Starting the Mavlink GPRS with custom ports and load parameters from download file:
+Starting the Mavlink GPRS with custom ports and load parameters from download file:  
  `./MavlinkGPRSServer -i 25000 -c 58000 -r parameters.txt`  
 
 

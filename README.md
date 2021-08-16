@@ -1,5 +1,5 @@
 # Mavlink Ardupilot Telemetry via GPRS (2G) with multiple client support:
-![Setup](images/1.blokdiagram-mavlinkGPRS.png)
+![Setup](images/blokdiagram-mavlinkGPRS.png)
 
 # Introduction
 As an alternative to having a high power long range telemetry link, I wanted to try and relay data via a simple GPRS link using a simple cheap SIM800L module. Since these opprates at ~850MHz with a power ouput up to 2W, it should have plenty of range and bandwith if you fly where there is Telecom coverage.

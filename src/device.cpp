@@ -202,4 +202,14 @@ std::string Device::getName(void){
 	 this->
 	 this->myConnection.startConnection(fd);
  }*/
+
+ 
+void Device::sendAck(uint16_t mav_cmd, uint8_t mav_result){
+	mavlink_message_t reply;
+	mavlink_command_ack_t ack;
+	ack.command=mav_cmd;
+	ack.result=mav_result;
+	mavlink_msg_command_ack_encode(this->system_id,this->component_id, &reply, &ack);
+	this->sendMSG(reply);
+}
   

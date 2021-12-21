@@ -70,6 +70,15 @@ using namespace std;
 	tm *gmtm = gmtime(&now);
 	sprintf(buf,"%02d-%02d-%04d_%02d-%02d-%02d_Parameters.txt",gmtm->tm_mday,gmtm->tm_mon,gmtm->tm_year+1900,gmtm->tm_hour,gmtm->tm_min,gmtm->tm_sec);
 	this->_fileName = buf;
+
+	// set these dummy values, so if server is running in read-only mode, this will be sent to clients, thus removing the firmware error message in QgroundControl.
+	this->autoPilotVersion.capabilities=0xFF;
+	this->autoPilotVersion.flight_sw_version=4;
+	this->autoPilotVersion.middleware_sw_version=1;
+	this->autoPilotVersion.os_sw_version=5;
+	this->autoPilotVersion.board_version=4;
+	this->autoPilotVersion.vendor_id=8;
+	this->autoPilotVersion.product_id=9;
  }
  
  void Parameters::addParameter(mavlink_message_t msg){

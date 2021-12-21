@@ -43,6 +43,7 @@ void usage(void) {
            "-u  <UDP Client Port>  UDP Port for relaying incomming sata to (default 6500).\n"
            "-w  <Parameter file>   If specified the program will download and save all parameters from drone (slow).\n"
            "-r  <Parameter file>   If specified the program will read all parameters from this input file and not download from drone (fast).\n"
+		   "-m  <Mode>             0=read/write to drone (default), 1=Read only.\n"
            "\n"
            "Example:\n"
            " MavlinkGPRS\n"
@@ -68,6 +69,7 @@ int main(int argc, char** argv)
 	int gprsPort = 14450;     // default value if not specified.
 	int tcpPort = 5760;       // default value if not specified.
 	int udpClientPort = 6500; // default value if not specified.
+	bool readOnlyMode = false;
 	std::string parameterFile = "";
 	DataMode_t parameterMode = READ_ONLY;
 	
@@ -79,7 +81,7 @@ int main(int argc, char** argv)
             { "help", no_argument, &flagHelp, 1 },
             {      0,           0,         0, 0 }
         };
-        int c = getopt_long(argc, argv, "h:i:c:u:w:r:", optiona, &nOptionIndex);
+        int c = getopt_long(argc, argv, "h:i:c:u:w:r:m:", optiona, &nOptionIndex);
         if (c == -1) {
             break;
         }
@@ -129,6 +131,14 @@ int main(int argc, char** argv)
 				fprintf(stderr, "Parameter File will not be downloaded but loaded from file %s\n",parameterFile.c_str());
 	            break;
             }		
+ 			case 'm': {
+				 int tempMode=atoi(optarg);
+				 if(tempMode == 1){
+					readOnlyMode= true;
+				 }
+	            break;
+            }
+				
 
             default: {
                 fprintf(stderr, "MavlinkGPRS: Unknown input switch %c\n", c);
@@ -184,7 +194,13 @@ int main(int argc, char** argv)
 		parameterFile = "defaultParameters.txt";
 	}
 	Parameters parametersList("", parameterFile, parameterMode);
-		
+	
+	mavlink_statustext_t hello;
+	hello.severity=MAV_SEVERITY_INFO;
+	std::string s = "Hello to Lagonis Mavlink Server Program";
+	strcpy(hello.text, s.c_str());
+	parametersList.statusmsg[0] = hello;
+	parametersList.statusmsgCount++;
 	
 	
 	
@@ -205,10 +221,12 @@ int main(int argc, char** argv)
 	
 	Waypoints waypointList("", argv[4], waypointMode);
 	*/
+	// DEBUG:
+	//Waypoints waypointList("", "Waypoints.txt", READ_ONLY); // load from file for debug.
 	Waypoints waypointList("", "", UPDATE); // always update.
 	
 		
-	DeviceServer gprsLink(gprsPort, SOCK_DGRAM, "GPRSLink", &parametersList, &waypointList);
+	DeviceServer gprsLink(gprsPort, SOCK_DGRAM, "GPRSLink", &parametersList, &waypointList, readOnlyMode);
 	
 	std::list<DeviceClient> listofClients = {
 //		DeviceClient(udpClientPort, SOCK_DGRAM, "UDPClients", &parametersList, &waypointList)
@@ -309,7 +327,8 @@ int main(int argc, char** argv)
 						//std::cout<< (*it).getName() << "\n";	
 						if(!(msg.msgid == 30 ||  msg.msgid == 74 || msg.msgid == 33 || msg.msgid == 2 || msg.msgid == 241 || msg.msgid == 147 || msg.msgid == 125 || msg.msgid == 42 
 						  || msg.msgid == 36 || msg.msgid == 65 || msg.msgid == 35 || msg.msgid == 27 || msg.msgid == 29 || msg.msgid == 24 || msg.msgid == 1 || msg.msgid == 0
-						  || msg.msgid == 111 || msg.msgid == 22 || msg.msgid == 87 || msg.msgid == 62 || msg.msgid == 242|| msg.msgid == 136|| msg.msgid == 49 || msg.msgid == 32)){
+						  || msg.msgid == 111 || msg.msgid == 22 || msg.msgid == 87 || msg.msgid == 62 || msg.msgid == 242|| msg.msgid == 136|| msg.msgid == 49 
+						  || msg.msgid == 32 || msg.msgid == 116)){
 							printf("%s #%d Receiving MSG#=%d from Drone\n",gprsLink.getName().c_str(),(*it).getFD(),msg.msgid); 								
 							
 							/* debug how is the heartbeat.

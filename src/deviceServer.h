@@ -15,7 +15,7 @@ class DeviceServer : public Device
 	// Public functions to be used on all Messages
 	public:	
 	DeviceServer(){}; 
-	DeviceServer(int ConnectionPort, int ConnectionType, std::string name, Parameters *parameterList, Waypoints *waypointList); // Contructor for when starting a connection.
+	DeviceServer(int ConnectionPort, int ConnectionType, std::string name, Parameters *parameterList, Waypoints *waypointList, bool readOnlyMode); // Contructor for when starting a connection.
 	~DeviceServer(){}; // Destructor.
 	
 	void timeoutService(void); // Ensure running of statemachine for re-request.	
@@ -49,6 +49,7 @@ class DeviceServer : public Device
 	uint16_t missionRequestCount=0;
 	
 	void setRunningModeFilter(void);
+	bool readOnlyMode = false;
 };
 
 #endif /* DEVICESERVER_H_ */

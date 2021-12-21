@@ -6,7 +6,7 @@
  */ 
 #include "deviceServer.h" 
 
- DeviceServer::DeviceServer(int ConnectionPort, int ConnectionType, std::string name, Parameters *parameterList, Waypoints *waypointList) : Device(ConnectionPort, ConnectionType, name, parameterList, waypointList){
+ DeviceServer::DeviceServer(int ConnectionPort, int ConnectionType, std::string name, Parameters *parameterList, Waypoints *waypointList, bool readOnlyMode) : Device(ConnectionPort, ConnectionType, name, parameterList, waypointList){
 	this->myFilter.setAllPackageFilter(DISCARD); // Server will only look for Attitude MSG (using time since boot). It should download mission before sending any data to clients (FORWARD)
 	this->myFilter.setPackageFilter(MAVLINK_MSG_ID_ATTITUDE, HANDLE);
 	this->myFilter.setPackageFilter(MAVLINK_MSG_ID_AUTOPILOT_VERSION, HANDLE);	
@@ -19,6 +19,8 @@
 	this->state=INIT;
 	this->system_id=0xFF;    // We are sending as Server.
 	this->component_id=0xBE; // We are sending as Server.	
+
+	this->readOnlyMode = readOnlyMode;
  }
  
  void DeviceServer::timeoutService(void){
@@ -121,7 +123,12 @@
 				this->state=RUNNING;				
 			}
 		}else{
-			if(this->lastmsgTime>this->nextPackageTimeout){
+			// Check if we are in read-only mode, thus go directly to running mode:
+			if(this->readOnlyMode == true){
+				printf("Server is opperating in readonly mode, thus unable to request mission or parameters and going directly to running mode now.\n");
+				this->setRunningModeFilter();
+				this->state=RUNNING;				
+			}else if(this->lastmsgTime>this->nextPackageTimeout){
 				this->nextPackageTimeout=this->lastmsgTime+1000;
 				this->getAutopilotVersion();	// resend requrst.
 				printf("Re-requisting AutoPilot version!\n");

@@ -29,7 +29,8 @@ class Waypoints
 	void addWaypoint(mavlink_message_t msg);
 	void saveMission(void);
 	
-	mavlink_mission_item_t getWaypointByID(uint16_t id);
+	mavlink_mission_item_t getWaypointByID(uint16_t id);     // DEPRECATED: Replaced by MISSION_ITEM_INT (2020-06).
+	mavlink_mission_item_int_t getMissionItemIntByID(uint16_t id);
 	uint16_t getNumberOfWaypoints(void);
 	void setNumberOfWaypoints(uint16_t totalNumberOfWaypoints);
 	DataMode_t getWaypointMode(void);

@@ -58,6 +58,7 @@ class Device
 	virtual void handleIncommingPackage(mavlink_message_t &msg)=0; 
 //void sendBufferData(uint16_t length);
 	void sendAllParameters(void);
+	void sendAck(uint16_t mav_cmd, uint8_t mav_result);
 	
 	Connection myConnection;
 	MavPackageFilter myFilter;

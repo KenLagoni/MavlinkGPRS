@@ -24,13 +24,13 @@ using namespace std;
 	{
 		this->_filePath = filePath + "/";
 	}
-		
-	this->_fileName = fileName;
-	*/
+	*/	
+	//this->_fileName = fileName;
+	
 	this->fileMode = mode;
 	
 	if(this->fileMode == READ_ONLY){ // else skip load and thus main will ask for them.
-		printf("Loading all waypoints from file %s", this->_fileName.c_str());
+		printf("Loading all waypoints from file %s ", this->_fileName.c_str());
 		this->loadWaypoints();
 	}
 } 
@@ -56,7 +56,7 @@ using namespace std;
 	time_t now = time(0);
 	// convert now to tm struct for UTC
 	tm *gmtm = gmtime(&now);
-	sprintf(buf,"%02d-%02d-%04d_%02d-%02d-%02d_Waypoints.txt",gmtm->tm_mday,gmtm->tm_mday,gmtm->tm_year+1900,gmtm->tm_hour,gmtm->tm_min,gmtm->tm_sec); 
+	sprintf(buf,"%02d-%02d-%04d_%02d-%02d-%02d_Waypoints.txt",gmtm->tm_mday,gmtm->tm_mon+1,gmtm->tm_year+1900,gmtm->tm_hour,gmtm->tm_min,gmtm->tm_sec); 
 	this->_fileName = buf;
  }
  
@@ -108,6 +108,29 @@ using namespace std;
 	 mavlink_mission_item_t msg;
 	 if(id < MAX_PARAMETERS){
 		 msg = waypoints[id];
+	 }else{
+		 msg = {};
+	 }
+	 return msg;
+ }
+
+ mavlink_mission_item_int_t Waypoints::getMissionItemIntByID(uint16_t id){
+	 mavlink_mission_item_int_t msg;
+	 if(id < MAX_PARAMETERS){
+		msg.target_system = waypoints[id].target_system;
+  		msg.target_component = waypoints[id].target_component;
+		msg.seq = waypoints[id].seq;
+		msg.frame = waypoints[id].frame;
+		msg.command = waypoints[id].command;
+		msg.current = waypoints[id].current;
+		msg.autocontinue = waypoints[id].autocontinue;
+		msg.param1 = waypoints[id].param1;
+		msg.param2 = waypoints[id].param2;
+		msg.param3 = waypoints[id].param3;
+	    msg.param4 = waypoints[id].param4;
+		msg.x = (int32_t)(waypoints[id].x*10000000);
+		msg.y = (int32_t)(waypoints[id].y*10000000);
+		msg.z = waypoints[id].z;
 	 }else{
 		 msg = {};
 	 }
